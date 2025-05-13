@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		 <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+		<title>Electro - HTML Ecommerce Template</title>
+
+		<!-- Google font -->
+		<link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
+
+		<!-- Bootstrap -->
+		<link type="text/css" rel="stylesheet" href="css/bootstrap.min.css"/>
+
+		<!-- Slick -->
+		
+		<link type="text/css" rel="stylesheet" href="css/slick-theme.css"/>
+
+		<!-- nouislider -->
+		<link type="text/css" rel="stylesheet" href="css/nouislider.min.css"/>
+
+		<!-- Font Awesome Icon -->
+		<link rel="stylesheet" href="css/font-awesome.min.css">
+
+		<!-- Custom stlylesheet -->
+		<link type="text/css" rel="stylesheet" href="css/style.css"/>
+
+		<link rel="stylesheet"  href="css/spapp.css"/>
+		<link href="css/toaster.css" rel="stylesheet">
+    </head>
+	<body>
+		<header>
+			<!-- TOP HEADER -->
+			<div id="top-header">
+				<div class="container">
+					<ul class="header-links pull-left">
+						<li><a href="#"><i class="fa fa-phone"></i>+033-333-333</a></li>
+						<li><a href="#"><i class="fa fa-envelope-o"></i> electro@gmail.com</a></li>
+						<li><a href="#"><i class="fa fa-map-marker"></i> Rustempasina</a></li>
+					</ul>
+					<ul class="header-links pull-right">
+						<li><a href="#delete_acc">Delete Account</a></li>
+						<li><a onclick="Utils.logout();">Logout</a></li>
+						<li><a href="#forgot_password"><i class="fa fa-user-o"></i> My Account</a></li>
+					</ul>
+				</div>
+			</div>
+			<!-- /TOP HEADER -->
+
+			<!-- MAIN HEADER -->
+			<div id="header">
+				<!-- container -->
+				<div class="container">
+					<!-- row -->
+					<div class="row">
+						<!-- LOGO -->
+						<div class="col-md-3">
+							<div class="header-logo">
+								<a href="#home" class="logo">
+									<img src="./img/logo.png" alt="">
+								</a>
+							</div>
+						</div>
+						<!-- /LOGO -->
+
+						<!-- SEARCH BAR -->
+						<div class="col-md-6">
+							<div class="header-container">
+							<div class="header-search">
+								<form id="search-form">
+									<input class="input" name="search" placeholder="Search here">
+									<button type="search" class="search-btn" id="search-button">Search</button>
+								</form>
+							</div>
+						</div>
+					</div>
+						<!-- /SEARCH BAR -->
+
+						<!-- ACCOUNT -->
+						<div class="col-md-3 clearfix">
+							<div class="header-ctn">
+								<!-- Wishlist -->
+								<div>
+									<a href="#wishlist">
+										<i class="fa fa-heart-o"></i>
+										<span>Your Wishlist</span>
+									</a>
+								</div>
+								<!-- /Wishlist -->
+
+								<!-- Cart -->
+								<div class="dropdown">
+									<a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+										<i class="fa fa-shopping-cart"></i>
+										<span>Your Cart</span>
+										<div class="qty" id="totalItems">0</div>
+									</a>
+									<div class="cart-dropdown">
+										<div class="cart-list" id="cartList"></div>
+										<div class="cart-summary">
+											<small id="totalQuantity">0 Item(s) selected</small>
+											<h5 id="subtotal">SUBTOTAL: $0.00</h5>
+										</div>
+										<div class="cart-btns">
+											<a href="#cart">View Cart</a>
+											<a href="#checkout">Checkout <i class="fa fa-arrow-circle-right"></i></a>
+										</div>
+									</div>
+								</div>
+								
+								<!-- /Cart -->
+							</div>
+						</div>
+						<!-- /ACCOUNT -->
+					</div>
+					<!-- row -->
+				</div>
+				<!-- container -->
+			</div>
+			<!-- /MAIN HEADER -->
+		</header>
+		<!-- /HEADER -->
+
+		<!-- NAVIGATION -->
+		<nav id="navigation">
+			<!-- container -->
+			<div class="container">
+				<!-- responsive-nav -->
+				<div id="responsive-nav">
+					<!-- NAV -->
+					<ul class="main-nav nav navbar-nav">
+						<li class="active" name="home"><a href="#home">Home</a></li>
+						<li name="allProducts"><a href="#store">All Products</a></li>
+						<li name="Laptops"><a href="#store">Laptops</a></li>
+						<li name="PC"><a href="#store">PC</a></li>
+						<li name="Components"><a href="#store">Components</a></li>
+						<li name="Accessories"><a href="#store">Accessories</a></li>
+						<li name="Smartphones"><a href="#store">Smartphones</a></li>
+						<li name="Network"><a href="#store">Network</a></li>
+					</ul>					
+					<!-- /NAV -->
+				</div>
+				<!-- /responsive-nav -->
+			</div>
+			<!-- /container -->
+		</nav>
+<!-- /NAVIGATION -->
+
+		<div class="container mt-5">
+			<div class="row">
+				<div class="col-md-12">
+					<main id="spapp" role="main">
+						<section id="cart" data-load="cart.html"></section>
+						<section id="checkout" data-load="checkout.html"></section>
+						<section id="login" data-load="login.html"></section>
+						<section id="product" data-load="product.html"></section>
+						<section id="register" data-load="register.html"></section>
+						<section id="store" data-load="store.html"></section>
+						<section id="wishlist" data-load="wishlist.html"></section>
+						<section id="home" data-load="home.html"></section>
+						<section id="forgot_password" data-load="forgot_password.html"></section>
+						<section id="delete_acc" data-load="delete_acc.html"></section>
+					  </main>
+				</div>
+			</div>
+		</div>
+		<!-- /SECTION -->
+		<!-- FOOTER -->
+		<footer id="footer">
+			<!-- top footer -->
+			<div class="section">
+				<!-- container -->
+				<div class="container">
+					<!-- row -->
+					<div class="row">
+						<div class="col-md-3 col-xs-6">
+							<div class="footer">
+								<h3 class="footer-title">About Us</h3>
+								<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut.</p>
+								<ul class="footer-links">
+									<li><a href="#"><i class="fa fa-map-marker"></i>Rustempasina</a></li>
+									<li><a href="#"><i class="fa fa-phone"></i>+033-333-333</a></li>
+									<li><a href="#"><i class="fa fa-envelope-o"></i>electro@gmail.com</a></li>
+								</ul>
+							</div>
+						</div>
+
+						<div class="col-md-3 col-xs-6">
+							<div class="footer">
+								<h3 class="footer-title">Categories</h3>
+								<ul class="footer-links">
+									<li><a href="#store">Hot deals</a></li>
+									<li><a href="#store">Laptops</a></li>
+									<li><a href="#store">Smartphones</a></li>
+									<li><a href="#store">PC</a></li>
+									<li><a href="#store">Accessories</a></li>
+								</ul>
+							</div>
+						</div>
+
+						<div class="clearfix visible-xs"></div>
+
+						<div class="col-md-3 col-xs-6">
+							<div class="footer">
+								<h3 class="footer-title">Information</h3>
+								<ul class="footer-links">
+									<li><a href="#">About Us</a></li>
+									<li><a href="#">Contact Us</a></li>
+									<li><a href="#">Privacy Policy</a></li>								
+									<li><a href="#">Terms & Conditions</a></li>
+								</ul>
+							</div>
+						</div>
+
+						<div class="col-md-3 col-xs-6">
+							<div class="footer">
+								<h3 class="footer-title">Service</h3>
+								<ul class="footer-links">
+									<li><a href="#login">My Account</a></li>
+									<li><a href="#cart">View Cart</a></li>
+									<li><a href="#wishlist">Wishlist</a></li>
+								</ul>
+							</div>
+						</div>
+					</div>
+					<!-- /row -->
+				</div>
+				<!-- /container -->
+			</div>
+			<!-- /top footer -->
+
+			<!-- bottom footer -->
+			<div id="bottom-footer" class="section">
+				<div class="container">
+					<!-- row -->
+					<div class="row">
+						<div class="col-md-12 text-center">
+							<ul class="footer-payments">
+								<li><i class="fa fa-cc-visa"></i></li>
+								<li><i class="fa fa-credit-card"></i></li>
+								<li><i class="fa fa-cc-paypal"></i></li>
+								<li><i class="fa fa-cc-mastercard"></i></li>
+								<li><i class="fa fa-cc-discover"></i></li>
+								<li><i class="fa fa-cc-amex"></i></li>
+							</ul>							
+						</div>
+					</div>
+						<!-- /row -->
+				</div>
+				<!-- /container -->
+			</div>
+			<!-- /bottom footer -->
+		</footer>
+		<!-- /FOOTER -->
+		
+		<!-- jQuery Plugins -->
+		<script src="js/jquery.min.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+		<script src="js/slick.min.js"></script>
+		<script src="js/nouislider.min.js"></script>
+		<script src="js/jquery.zoom.min.js"></script>
+		<script src="js/main.js"></script>
+		<script src="js/jquery.spapp.min.js"></script>		
+		<script src="js/taostr.js"></script>	
+		<script src="utils/utils.js"></script>
+		<script src="utils/constants.js"></script>
+		<script src="utils/rest_client.js"></script>	
+		<script src="js/search.js"></script>
+	
+
+		<script>
+			if(Utils.get_from_localstorage("user")){
+				var app = $.spapp({
+  				defaultView  : "#home",
+ 				templateDir  : "./tpl/",
+  				pageNotFound : "error_404"
+				});
+			app.run();
+			} else{
+				window.location.href="login"
+			}
+		</script>
+	</body>
+</html>
