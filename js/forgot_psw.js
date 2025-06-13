@@ -62,19 +62,15 @@ function apiFormHandler(form, event) {
     event.preventDefault();
     blockUi("#restart-form");
 
-    let sendingUser = serializeSendingForm(form);
+    const storedUser = Utils.get_from_localstorage('user');
+    const enteredUsername = form.uname.value;
 
-    RestClient.get("beckend/users", sendingUser, function(response) {
-        if (Object.keys(response.data).length !== 0) {
-            editUser(serializeNewPassword(form));
-        } else {
-            showErrorMessage("Invalid username or password");
-            unblockUi("#restart-form");
-        }
-    }, function() {
-        showErrorMessage("Failed to login");
+    if (storedUser && storedUser.username === enteredUsername) {
+        editUser(serializeNewPassword(form));
+    } else {
+        showErrorMessage("Invalid username or not logged in");
         unblockUi("#restart-form");
-    });
+    }
 }
 
 function editUser(newPassword) {

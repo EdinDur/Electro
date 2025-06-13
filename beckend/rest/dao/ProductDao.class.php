@@ -9,7 +9,7 @@ class ProductDao extends BaseDao {
     
     public function get_product_display() {
         return $this->query(
-            "SELECT productName, category, price, productNew, sale, mImage FROM products"
+            "SELECT productName, category, price, stock, productNew, sale, mImage FROM products"
         );
     }
     public function get_product_by_category($category){

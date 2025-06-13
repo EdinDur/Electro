@@ -56,3 +56,61 @@ function fetchProductByName(productName) {
         console.error("Error fetching products:", jqXHR);
     });
 }
+
+function getProductNameFromUrl() {
+    // Try hash: #product?name=SomeProduct
+    let hash = window.location.hash;
+    if (hash.startsWith("#product")) {
+        let params = new URLSearchParams(hash.split("?")[1]);
+        return params.get("name");
+    }
+    // Try query string: ?name=SomeProduct
+    let params = new URLSearchParams(window.location.search);
+    return params.get("name");
+}
+
+function displayProductFromData(product) {
+    const cardContentProduct = productShowTemplate.html();
+    const $card = $(cardContentProduct);
+
+    $card.find('[data-product-name]').text(product.productName);
+    $card.find('[data-product-price]').text("$" + product.price);
+    $card.find('[data-product-stock]').text(product.stock > 0 ? "In Stock" : "Out of Stock");
+    $card.find('[data-product-mini-description]').text(product.miniDescription);
+    $card.find('[data-product-description]').text(product.description);
+    $card.find('[data-product-details]').text(product.details);
+    $card.find('[data-product-category]').text(product.category);
+    $card.find('[data-product-mImage]').attr("src", product.mImage);
+    $card.find('[data-product-sImage1]').attr("src", product.sImage1);
+    $card.find('[data-product-sImage2]').attr("src", product.sImage2);
+
+    if (product.productNew) {
+        $card.find(".new").text("New");
+    } else {
+        $card.find(".new").remove();
+    }
+
+    if (product.sale) {
+        $card.find(".sale").text(`${product.sale}%`);
+    } else {
+        $card.find(".sale").remove();
+    }
+
+    productShowCarContainer.empty().append($card);
+}
+
+$(document).ready(function() {
+    const productName = getProductNameFromUrl();
+    if (productName) {
+        fetchProductByName(productName);
+    } else {
+        console.error("No product name found in URL");
+    }
+});
+
+$(window).on('hashchange', function() {
+    const productName = getProductNameFromUrl();
+    if (productName) {
+        fetchProductByName(productName);
+    }
+});

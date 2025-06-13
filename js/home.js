@@ -21,6 +21,10 @@ RestClient.get("beckend/products", {}, function(response) {
         $card.find("[data-product-category]").text(product.category);
         $card.find("[data-product-image]").attr("src", product.mImage);
 
+        const productName = product.productName;
+        const productLink = `product.html#product?name=${encodeURIComponent(productName)}`;
+        $card.find('[data-product-name] a').attr('href', productLink);
+
         if (product.productNew) {
             $card.find(".new").text("New");
         } else {
@@ -45,6 +49,10 @@ RestClient.get("beckend/products", {}, function(response) {
         $card.find("[data-product-category]").text(product.category);
         $card.find("[data-product-image]").attr("src", product.mImage);
     
+        const productName = product.productName;
+        const productLink = `product.html#product?name=${encodeURIComponent(productName)}`;
+        $card.find('[data-product-name] a').attr('href', productLink);
+
         const newIndicator = $card.find(".new");
         if (product.productNew) {
             newIndicator.text("New");

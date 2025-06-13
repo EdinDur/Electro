@@ -28,7 +28,7 @@ Flight::set('user_service', new UserService());
  * )
  */
 
- Flight::route('POST /users/add', function() {
+Flight::route('POST /users/add', function() {
     // Get raw POST data
     $rawData = Flight::request()->getBody();
     
@@ -132,6 +132,8 @@ Flight::route('PUT /users/edit', function() {
  * )
  */
 Flight::route('GET /users', function() {
+    $username = Flight::request()->query['username'];
+    $password = Flight::request()->query['psw'];
 
     $user = [
         'username' => $username,
@@ -182,6 +184,20 @@ Flight::route('DELETE /users/delete', function() {
     } else {
         Flight::halt(500, "Failed to delete user $username");
     }
+});
+
+Flight::route('GET /users/orders', function() {
+    $user = Flight::get('user');
+    if (!$user) {
+        Flight::halt(401, "Unauthorized");
+    }
+    $orders = Flight::get('user_service')->get_user_orders($user->username);
+    Flight::json(['data' => $orders]);
+});
+
+Flight::route('GET /orders/@order_id/items', function($order_id) {
+    $items = Flight::get('user_service')->get_order_items($order_id);
+    Flight::json(['data' => $items]);
 });
 
 

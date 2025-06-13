@@ -29,17 +29,20 @@ Flight::group("/auth", function(){
      */
     Flight::route("POST /login", function(){
         $payload = json_decode(Flight::request()->getBody(), true);
-    
+
         if (!isset($payload["username"]) || !isset($payload["psw"])) {
             Flight::halt(400, "Missing required fields");
         }
-    
+
         $user = Flight::get("auth_service")->get_user_by_username($payload["username"]);
-    
+
+        // Debug: log the hash and plain password
+        error_log("Login attempt for {$payload['username']}: plain={$payload['psw']}, hash={$user['userPassword']}");
+
         if(!$user || !password_verify($payload["psw"], $user["userPassword"])) {
             Flight::halt(401, "Invalid username or password");
         }
-    
+
         unset($user["userPassword"]);
         
         $jwt_payload = [

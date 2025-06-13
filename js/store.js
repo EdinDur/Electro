@@ -6,10 +6,15 @@ const productsSearchTemplate = $("[data-product-specific-template]");
 const paginationContainer = $(".store-pagination");
 const sortSelect = $("#sort-select");
 
+// Price filter variables
+let minPrice = 0;
+let maxPrice = 10000; // Set a reasonable max, or dynamically set after fetching products
+
 // Ajax Calls
 function fetchProducts() {
     RestClient.get("beckend/products", {}, function(response) {
         data = response.data;
+        updatePriceSliderRange(data);
         displayProducts(currentPage);
     }, function(error) {
         console.error("Error fetching products:", error);
@@ -20,6 +25,7 @@ function fetchProducts() {
 function fetchCategoryProducts(categoryName) {
     RestClient.get("beckend/productsByCategory", { category: categoryName }, function(response) {
         data = response.data;
+        updatePriceSliderRange(data);
         displayProducts(currentPage);
     }, function(error) {
         console.error("Error fetching products:", error);
@@ -30,6 +36,7 @@ function fetchCategoryProducts(categoryName) {
 function SearchFunction(inputValue) {
     RestClient.get("beckend/productsByInput", { input: inputValue }, function(response) {
         data = response.data;
+        updatePriceSliderRange(data);
         displayProducts(currentPage);
     }, function(error) {
         console.error("Error fetching products:", error);
@@ -41,12 +48,21 @@ function SearchFunction(inputValue) {
 function fetchProductNew() {
     RestClient.get("beckend/productsNew", {}, function(response) {
         data = response.data;
+        updatePriceSliderRange(data);
         displayProducts(currentPage);
     }, function(error) {
         console.error("Error fetching products:", error);
     });
 }
 
+
+function getSelectedCategories() {
+    let selected = [];
+    $(".category-checkbox:checked").each(function() {
+        selected.push($(this).data("category"));
+    });
+    return selected;
+}
 
 function displayProducts(page) {
     const startIndex = (page - 1) * productsPerPage;
@@ -59,13 +75,29 @@ function displayProducts(page) {
 
     let filteredProducts = data;
 
-    const selectedOption = parseInt(sortSelect.val());
-
-    if (selectedOption === 1) {
-        filteredProducts = data.filter(product => product.productNew === 1);
-    } else if (selectedOption === 2) {
-        filteredProducts = data.filter(product => product.sale > 0);
+    // Filter by selected categories
+    const selectedCategories = getSelectedCategories();
+    if (selectedCategories.length > 0) {
+        filteredProducts = filteredProducts.filter(product =>
+            selectedCategories.includes(product.category)
+        );
     }
+
+    // Filter by sort option
+    const selectedOption = parseInt(sortSelect.val());
+    if (selectedOption === 1) {
+        filteredProducts = filteredProducts.filter(product => product.productNew === 1);
+    } else if (selectedOption === 2) {
+        filteredProducts = filteredProducts.filter(product => product.sale > 0);
+    }
+
+    // Filter by price
+    let min = Number($("#price-min").val()) || minPrice;
+    let max = Number($("#price-max").val()) || maxPrice;
+    filteredProducts = filteredProducts.filter(product => {
+        let price = Number(product.price);
+        return price >= min && price <= max;
+    });
 
     const totalFilteredProducts = filteredProducts.length;
     const totalPages = Math.ceil(totalFilteredProducts / productsPerPage);
@@ -171,4 +203,99 @@ function fetchProductByName(productName) {
         console.error("Error fetching products:", error);
     });
 }
+
+// After fetching products, set slider range dynamically
+function updatePriceSliderRange(products) {
+    if (!products || products.length === 0) return;
+    const prices = products.map(p => Number(p.price));
+    minPrice = Math.min(...prices);
+    maxPrice = Math.max(...prices);
+
+    $("#price-slider")[0].noUiSlider.updateOptions({
+        range: {
+            min: minPrice,
+            max: maxPrice
+        }
+    });
+    $("#price-min").val(minPrice);
+    $("#price-max").val(maxPrice);
+}
+
+// Initialize price slider
+$(document).ready(function() {
+    if ($("#price-slider").length) {
+        // Only create if not already initialized
+        if (!$("#price-slider")[0].noUiSlider) {
+            noUiSlider.create($("#price-slider")[0], {
+                start: [minPrice, maxPrice],
+                connect: true,
+                range: {
+                    min: minPrice,
+                    max: maxPrice
+                },
+                step: 1,
+                tooltips: true,
+                format: {
+                    to: value => Math.round(value),
+                    from: value => Number(value)
+                }
+            });
+        }
+
+        // On slider update, update input fields
+        $("#price-slider")[0].noUiSlider.on('update', function(values, handle) {
+            $("#price-min").val(Math.round(values[0]));
+            $("#price-max").val(Math.round(values[1]));
+        });
+
+        // On slider change, filter products
+        $("#price-slider")[0].noUiSlider.on('change', function(values, handle) {
+            // Ensure min/max inputs are synced before filtering
+            $("#price-min").val(Math.round(values[0]));
+            $("#price-max").val(Math.round(values[1]));
+            displayProducts(1); // Always reset to first page on filter
+        });
+
+        // On input change, update slider and filter products
+        $("#price-min, #price-max").on('change', function() {
+            let min = Number($("#price-min").val());
+            let max = Number($("#price-max").val());
+            $("#price-slider")[0].noUiSlider.set([min, max]);
+            displayProducts(1); // Always reset to first page on filter
+        });
+    }
+});
+
+			$(document).ready(function() {
+				// Hide categories by default unless on All Products
+				function updateAsideVisibility() {
+					if(window.location.hash === "#store") {
+						$("#categories-aside").show();
+					} else {
+						$("#categories-aside").hide();
+					}
+				}
+
+				updateAsideVisibility();
+
+				// Show/hide categories on navigation click
+				$(document).on("click", 'li[name="allProducts"] > a', function() {
+					$("#categories-aside").show();
+				});
+
+				$(document).on("click", 'li[name]:not([name="allProducts"]) > a', function() {
+					$("#categories-aside").hide();
+				});
+
+				// Also update on hash change (for SPA navigation)
+				$(window).on("hashchange", function() {
+					updateAsideVisibility();
+				});
+			});
+
+// Listen for changes on category checkboxes
+$(document).on("change", ".category-checkbox", function() {
+    currentPage = 1;
+    displayProducts(currentPage);
+});
 
