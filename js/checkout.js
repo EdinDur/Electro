@@ -1,5 +1,4 @@
-let username="edin1234";
-RestClient.get("backend/cart?username=" + username, function(data) {
+RestClient.get("beckend/cart?username=" + username, function(data) {
     populateOrderSummary(data);
 }, function(xhr) {
     console.error("Failed to get cart data:", xhr);
@@ -19,13 +18,14 @@ function populateOrderSummary(response) {
 
     // Add product details
     responseData.forEach(function(product) {
+        var price = Number(product.price); // Ensure price is a number
         var productRow = $('<div class="order-col">');
         productRow.html(`
             <div>${product.productName}</div>
-            <div>$${product.price.toFixed(2)}</div>
+            <div>$${price.toFixed(2)}</div>
         `);
         orderSummary.append(productRow);
-        totalPrice += product.price;
+        totalPrice += price;
     });
 
     // Add shipping details
@@ -80,29 +80,33 @@ $("#billingForm").validate({
     }
   });
   
+  $.validator.addMethod("expdate", function(value, element) {
+    return this.optional(element) || /^(0[1-9]|1[0-2])\/\d{2}$/.test(value);
+}, "Please enter a valid expiration date (MM/YY).");
+
   $("#paymentForm").validate({
     rules: {
         "card-number": {
             required: function() {
                 return $("#Visa").is(":checked");
             },
-            minlength: 16
+            minlength: 16,
+            maxlength: 16,
+            digits: true
         },
-        "selectedYear": {
+        "exp-date": {
             required: function() {
                 return $("#Visa").is(":checked");
-            }
-        },
-        "selectedMonth": {
-            required: function() {
-                return $("#Visa").is(":checked");
-            }
+            },
+            expdate: true
         },
         "ccv": {
             required: function() {
                 return $("#Visa").is(":checked");
             },
-            minlength: 3
+            minlength: 3,
+            maxlength: 3,
+            digits: true
         },
         "username": {
             required: function() {
@@ -115,28 +119,71 @@ $("#billingForm").validate({
             },
             minlength: 4
         }
+    },
+    messages: {
+        "exp-date": {
+            pattern: "Please enter a valid expiration date (MM/YY)."
+        }
     }   
 });
 
 
+$(document).on('input', '#exp-date', function() {
+    let val = $(this).val().replace(/[^\d]/g, '');
+    if (val.length > 2) {
+        val = val.slice(0,2) + '/' + val.slice(2,4);
+    }
+    $(this).val(val.slice(0,5));
+});
 
-  $("#submitButton").click(function(event) {
+// Only allow 3 digits for CCV
+$(document).on('input', '#ccv', function() {
+    this.value = this.value.replace(/\D/g, '').slice(0,3);
+});
+
+$("#submitButton").click(function(event) {
     event.preventDefault();
     var billingFormValid = $("#billingForm").valid();
     var paymentFormValid = $("#paymentForm").valid();
     
     if (billingFormValid && paymentFormValid) {
-        console.log("Both forms are valid. Proceeding with submission.");
-        event.preventDefault();
         blockUi("#paymentForm");
         blockUi("#billingForm");
-        //sent ajax post request with both forms 
+
+        // Serialize both forms
+        var billingData = serializeForm("#billingForm");
+        var paymentData = serializeForm("#paymentForm");
+
+        // Extract selected payment method
+        var paymentMethod = $("input[name='payment']:checked").attr("id");
+        paymentData.payment = paymentMethod;
+
+        // Get username from localstorage/session
+        var user = Utils.get_from_localstorage('user');
+        var username = user && user.username ? user.username : null;
+
+        // Combine all data
+        var checkoutData = {
+            username: username,
+            billing: billingData,
+            payment: paymentData
+        };
+
+        RestClient.post("beckend/checkout", JSON.stringify(checkoutData), function(response) {
+            unblockUi("#paymentForm");
+            unblockUi("#billingForm");
+            toastr.success("Order placed successfully!");
+            // Optionally redirect or clear forms
+        }, function(xhr) {
+            unblockUi("#paymentForm");
+            unblockUi("#billingForm");
+            toastr.error("Failed to place order.");
+        });
 
     } else {
-        event.preventDefault();
-        console.log("One or both forms are invalid. Please fill out all required fields.");
         unblockUi("#paymentForm");
         unblockUi("#billingForm");
+        toastr.error("Please fill out all required fields.");
     }
 });
 

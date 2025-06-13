@@ -11,14 +11,10 @@ const RestClient = {
                       const token = storedUser.token;
                       if (token) {
                           xhr.setRequestHeader("Authentication", `${token}`);
-                      } else {
-                          console.log("No token found in user data");
                       }
                   } catch (e) {
                       console.error("Error accessing user data:", e);
                   }
-              } else {
-                  console.log("No user found in local storage");
               }
           },
           success: function (response) {
@@ -42,14 +38,10 @@ const RestClient = {
                       const token = storedUser.token;
                       if (token) {
                           xhr.setRequestHeader("Authentication", `${token}`);
-                      } else {
-                          console.log("No token found in user data");
                       }
                   } catch (e) {
                       console.error("Error accessing user data:", e);
                   }
-              } else {
-                  console.log("No user found in local storage");
               }
           }
       })

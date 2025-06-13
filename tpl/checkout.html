@@ -30,7 +30,7 @@
 				<div class="row">
 
 					<div class="col-md-7">					
-						<form class="billing-details" id="billingForm">
+						<form class="billing-details" id="billingForm" action="javascript:void(0);">
 							<div class="section-title">
 								<h3 class="title">Billing address</h3>
 							</div>
@@ -92,7 +92,7 @@
 						</div>
 						
 						
-						<form class="payment-method" id="paymentForm">
+						<form class="payment-method" id="paymentForm" action="javascript:void(0);">
 							<div class="input-radio">
 								<input type="radio" name="payment" id="Visa">
 								<label for="Visa">
@@ -104,46 +104,13 @@
 										<label for="card-number">Card Number:</label>
 										<input class="input" type="number" id="card-number" name="card-number" placeholder="Enter your card number">
 									</div>
-									<div class="form-container">
-										<div class="form-group">
-											<label for="YearDropdown">Year:</label>
-											<select id="YearDropdown" name="selectedYear">
-												<option value="" disabled selected>-- Select Year --</option>
-												<option value="2024">2024</option>
-												<option value="2025">2025</option>
-												<option value="2026">2026</option>
-												<option value="2027">2027</option>
-												<option value="2028">2028</option>
-												<option value="2029">2029</option>
-												<option value="2030">2030</option>
-												<option value="2031">2031</option>
-												<option value="2032">2032</option>
-												<option value="2033">2033</option>
-												<option value="2034">2034</option>
-											</select>
-										</div>
-										<div class="form-group">
-											<label for="optionsDropdown">Month:</label>
-											<select id="optionsDropdown" name="selectedMonth" >
-												<option value="" disabled selected>-- Select Month --</option>
-												<option value="01">01</option>
-												<option value="02">02</option>
-												<option value="03">03</option>
-												<option value="04">04</option>
-												<option value="05">05</option>
-												<option value="06">06</option>
-												<option value="07">07</option>
-												<option value="08">08</option>
-												<option value="09">09</option>
-												<option value="10">10</option>
-												<option value="11">11</option>
-												<option value="12">12</option>
-											</select>
-										</div>
+									<div class="form-group">
+										<label for="exp-date">Expiration Date:</label>
+										<input class="input" type="text" id="exp-date" name="exp-date" placeholder="MM/YY" maxlength="5" autocomplete="cc-exp">
 									</div>
 									<div class="form-group">
 										<label for="ccv">CCV:</label>
-										<input class="input" type="number" id="ccv" name="ccv" placeholder="Enter your CCV">
+										<input class="input" type="text" id="ccv" name="ccv" placeholder="Enter your CCV" maxlength="3" pattern="\d{3}">
 									</div>                        
 								</div>                                
 							</div>

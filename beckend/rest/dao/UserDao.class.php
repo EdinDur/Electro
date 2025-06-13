@@ -24,14 +24,19 @@ class UserDao extends BaseDao {
         if (!isset($user['username']) || !isset($user['psw'])) {
             return null;
         }
-    
-        $query = "SELECT * FROM users WHERE username = :username AND userPassword = :userPassword";
+
+        $query = "SELECT * FROM users WHERE username = :username";
         $params = [
-            "username" => $user['username'],
-            "userPassword" => $user['psw']
+            "username" => $user['username']
         ];
-    
-        return $this->query_unique($query, $params);
+
+        $row = $this->query_unique($query, $params);
+
+        if ($row && password_verify($user['psw'], $row['userPassword'])) {
+            return $row;
+        } else {
+            return null;
+        }
     }
     public function edit_user($user) {
         $query = "UPDATE users SET userPassword = :newPassword WHERE username = :username";
@@ -54,6 +59,32 @@ class UserDao extends BaseDao {
             return false;
         }
     }
+
+    public function get_user_orders($username) {
+        $stmt = $this->connection->prepare("
+            SELECT 
+                o.id AS order_id,
+                o.orderDate AS date,
+                GROUP_CONCAT(CONCAT(oi.productName, ' x', oi.quantity) SEPARATOR ', ') AS items,
+                o.totalPrice AS total,
+                o.status
+            FROM orders o
+            LEFT JOIN order_items oi ON o.id = oi.orderId
+            WHERE o.username = :username
+            GROUP BY o.id, o.orderDate, o.totalPrice, o.status
+            ORDER BY o.orderDate DESC
+        ");
+        $stmt->execute(['username' => $username]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
     
-    
+    public function get_order_items($order_id) {
+        $stmt = $this->connection->prepare("
+            SELECT productName, quantity, price
+            FROM order_items
+            WHERE orderId = :order_id
+        ");
+        $stmt->execute(['order_id' => $order_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
