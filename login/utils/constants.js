@@ -1,9 +1,9 @@
 var Constants = {
     get_api_base_url: function () {
       if (location.hostname == "localhost") {
-        return "http://localhost/WebProgramming/";
+          return "http://localhost/WebProgramming/";
       } else {
-        return "nothing";
+          return "electro-bcqmb.ondigitalocean.app";
       }
     },
   };

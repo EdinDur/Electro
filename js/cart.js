@@ -14,20 +14,57 @@ $('#emptyCartButton').click(function() {
     });
 });
 
+function groupProductsByName(products) {
+    const grouped = {};
+    products.forEach(product => {
+        const name = product.productName;
+        const price = parseFloat(product.price) || 0;
+        const quantity = parseInt(product.quantity, 10) || 1;
+        const mImage = product.mImage;
+
+        if (!grouped[name]) {
+            grouped[name] = {
+                productName: name,
+                price: price,
+                quantity: quantity,
+                mImage: mImage
+            };
+        } else {
+            grouped[name].quantity += quantity;
+            grouped[name].price += price * quantity;
+        }
+    });
+
+    // If price was summed, adjust to total price, else keep as unit price
+    Object.values(grouped).forEach(product => {
+        if (product.quantity > 1) {
+            product.totalPrice = product.price;
+            product.unitPrice = product.price / product.quantity;
+        } else {
+            product.totalPrice = product.price;
+            product.unitPrice = product.price;
+        }
+    });
+
+    return Object.values(grouped);
+}
+
 function populateTableWithData(response) {
     var responseData = response.data;
     var tableBody = $('#productTableBody');
     var totalPrice = 0;
-    var products = {};
 
     tableBody.empty();
 
-    responseData.forEach(function(product) {
+    // Group products by productName
+    var groupedProducts = groupProductsByName(responseData);
+
+    groupedProducts.forEach(function(product) {
         var productName = product.productName;
-        var productPrice = parseFloat(product.price) || 0;
+        var productPrice = product.unitPrice || parseFloat(product.price) || 0;
         var productImage = product.mImage;
-        var quantity = parseInt(product.quantity, 10) || 1;
-        var totalProductPrice = productPrice * quantity;
+        var quantity = product.quantity;
+        var totalProductPrice = product.totalPrice || (productPrice * quantity);
 
         var row = $('<tr>');
         row.attr('data-name', productName);
@@ -56,11 +93,14 @@ function populateOrderSummary(data) {
 
     orderSummaryContainer.empty();
 
+    // Group products by productName
+    var groupedProducts = groupProductsByName(data);
+
     var orderSummary = $('<div class="order-summary">');
 
-    data.forEach(function(product) {
-        var quantity = parseInt(product.quantity, 10) || 1;
-        var productTotal = product.price * quantity;
+    groupedProducts.forEach(function(product) {
+        var quantity = product.quantity;
+        var productTotal = product.totalPrice || (product.price * quantity);
         var productRow = $('<div class="order-col">');
         productRow.html(`
             <div>${product.productName} x${quantity}</div>
