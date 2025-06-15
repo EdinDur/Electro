@@ -30,6 +30,12 @@ function fetchWishlist() {
                 <td class="bold uppercase">$${pricePerProduct.toFixed(2)}</td>
                 <td class="bold uppercase">${product.count}</td>
                 <td class="bold uppercase">$<span class="productTotal">${product.totalPrice.toFixed(2)}</span></td>
+                <td>
+                    <button class="delete-wishlist-btn custom-button" data-product="${productName}">Delete</button>
+                </td>
+                <td>
+                    <button class="move-to-cart-btn custom-button" data-product="${productName}">Move to Cart</button>
+                </td>
             `);
             tableBody.append(row);
             totalPrice += product.totalPrice;
@@ -41,6 +47,30 @@ function fetchWishlist() {
 }
 fetchWishlist();
 
+$('#productWishlistTableBody').on('click', '.delete-wishlist-btn', function() {
+    var productName = $(this).data('product');
+    RestClient.delete("beckend/wishlist/delete-product?productName=" + encodeURIComponent(productName), {}, function() {
+        fetchWishlist();
+    }, function(jqXHR) {
+        console.error("Failed to delete product from wishlist:", jqXHR);
+    });
+});
+
+$('#productWishlistTableBody').on('click', '.move-to-cart-btn', function() {
+    var productName = $(this).data('product');
+    // Add to cart
+    RestClient.post("beckend/cart/add", { productName: productName }, function() {
+        // Remove from wishlist after adding to cart
+        RestClient.delete("beckend/wishlist/delete-product?productName=" + encodeURIComponent(productName), {}, function() {
+            fetchWishlist();
+        }, function(jqXHR) {
+            console.error("Failed to delete product from wishlist after moving to cart:", jqXHR);
+        });
+    }, function(jqXHR) {
+        console.error("Failed to move product to cart:", jqXHR);
+    });
+});
+
 $('#emptyWishlistButton').click(function() {
     RestClient.delete("beckend/wishlist/delete", {}, function() {
         $('#productWishlistTableBody').empty();
@@ -49,4 +79,3 @@ $('#emptyWishlistButton').click(function() {
         console.error("Failed to empty the wishlist:", jqXHR);
     });
 });
-

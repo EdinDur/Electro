@@ -87,4 +87,17 @@ class UserDao extends BaseDao {
         $stmt->execute(['order_id' => $order_id]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function update_user_role($user_id, $role) {
+        $query = "UPDATE users SET userRole = :role WHERE id = :user_id";
+        return $this->query_unique($query, [
+            ':role' => $role,
+            ':user_id' => $user_id
+        ]);
+    }
+
+    public function get_all_users() {
+        return $this->query("SELECT id, username, email, userRole, created_at FROM users");
+    }
+
 }

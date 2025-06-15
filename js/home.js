@@ -5,10 +5,14 @@ const productsBestSellingTemplate = $("[data-product-best-selling-template]");
 const productBestSellingContainer = $("[data-product-best-selling-cards-container]");
 
 RestClient.get("beckend/products", {}, function(response) {
+    if (!response || !response.data || !Array.isArray(response.data)) {
+        console.error('Invalid response data:', response);
+        return;
+    }
     const data = response.data;
 
-    const newProducts = data.filter(product => product.productNew === 1);
-    const bestSellingProducts = data.filter(product => product.productNew === 0 && product.sale);
+    const newProducts = data.filter(product => product && product.productNew === 1);
+    const bestSellingProducts = data.filter(product => product && product.productNew === 0 && product.sale);
     const bestSellingProductsToDisplay = bestSellingProducts.slice(0, 4);
     const newProductsToDisplay = newProducts.slice(0, 4);
 

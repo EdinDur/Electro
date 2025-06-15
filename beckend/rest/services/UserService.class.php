@@ -33,4 +33,14 @@ class UserService {
     public function get_order_items($order_id) {
         return $this->user_dao->get_order_items($order_id);
     }
+    public function get_user_by_username($username) {
+        return $this->auth_dao->get_user_by_username($username);
+    }
+
+    public function get_all_users() {
+        return $this->user_dao->get_all_users();
+    }
+    public function update_user_role($user_id, $role) {
+        return $this->user_dao->update_user_role($user_id, $role);
+    }
 }

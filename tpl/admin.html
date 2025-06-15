@@ -1,0 +1,67 @@
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Admin Dashboard</h1>
+            <p>Welcome to the admin dashboard. Here you can manage users and products.</p>
+        </div>
+    </div>
+
+    <!-- User Management Section -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <h2>User Management</h2>
+            <div class="mb-3">
+                <input type="text" class="form-control" id="userSearch" placeholder="Search users...">
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered" id="userTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Created At</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- User data will be dynamically inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Management Section -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <h2>Product Management</h2>
+            <div class="mb-3">
+                <input type="text" class="form-control" id="productSearch" placeholder="Search products...">
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered" id="productTable">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Category</th>
+                            <th>Sale (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Product data will be dynamically inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="./js/jquery.min.js"></script>
+<script src="./js/bootstrap.min.js"></script>
+<script src="./js/toastr.min.js"></script>
+<script src="./utils/constants.js"></script>
+<script src="./utils/utils.js"></script>
+<script src="./utils/rest_client.js"></script>
+<script src="./js/admin.js"></script>

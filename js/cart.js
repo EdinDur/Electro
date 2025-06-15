@@ -26,34 +26,25 @@ function populateTableWithData(response) {
         var productName = product.productName;
         var productPrice = parseFloat(product.price) || 0;
         var productImage = product.mImage;
+        var quantity = parseInt(product.quantity, 10) || 1;
+        var totalProductPrice = productPrice * quantity;
 
-        if (products[productName]) {
-            products[productName].quantity++;
-            products[productName].totalPrice += productPrice;
+        var row = $('<tr>');
+        row.attr('data-name', productName);
+        var imageHtml = productImage ? `<td><img src="${productImage}" alt="${productName}" width="50"></td>` : '<td colspan="1">Image not available</td>';
+        row.html(`
+            ${imageHtml}
+            <td class="bold uppercase">${productName}</td>
+            <td class="bold uppercase">$${productPrice.toFixed(2)}</td>
+            <td class="bold uppercase productQuantity">${quantity}</td>
+            <td class="bold uppercase">$<span class="productTotal">${totalProductPrice.toFixed(2)}</span></td>
+            <td>
+                <button class="delete-cart-btn custom-button" data-product="${productName}">Delete</button>
+            </td>
+        `);
+        tableBody.append(row);
 
-            var row = tableBody.find(`tr[data-name="${productName}"]`);
-            row.find('.productQuantity').text(products[productName].quantity);
-            row.find('.productTotal').text(products[productName].totalPrice.toFixed(2));
-        } else {
-            products[productName] = {
-                quantity: 1,
-                totalPrice: productPrice
-            };
-
-            var row = $('<tr>');
-            row.attr('data-name', productName);
-            var imageHtml = productImage ? `<td><img src="${productImage}" alt="${productName}" width="50"></td>` : '<td colspan="1">Image not available</td>';
-            row.html(`
-                ${imageHtml}
-                <td class="bold uppercase">${productName}</td>
-                <td class="bold uppercase">$${productPrice.toFixed(2)}</td>
-                <td class="bold uppercase productQuantity">1</td>
-                <td class="bold uppercase">$<span class="productTotal">${productPrice.toFixed(2)}</span></td>
-            `);
-            tableBody.append(row);
-        }
-
-        totalPrice += productPrice;
+        totalPrice += totalProductPrice;
     });
 
     $('#totalPrice').text('$' + totalPrice.toFixed(2));
@@ -68,13 +59,15 @@ function populateOrderSummary(data) {
     var orderSummary = $('<div class="order-summary">');
 
     data.forEach(function(product) {
+        var quantity = parseInt(product.quantity, 10) || 1;
+        var productTotal = product.price * quantity;
         var productRow = $('<div class="order-col">');
         productRow.html(`
-            <div>${product.name}</div>
-            <div>$${product.price.toFixed(2)}</div>
+            <div>${product.productName} x${quantity}</div>
+            <div>$${productTotal.toFixed(2)}</div>
         `);
         orderSummary.append(productRow);
-        totalPrice += product.price;
+        totalPrice += productTotal;
     });
 
     var shippingRow = $('<div class="order-col">');
@@ -93,3 +86,15 @@ function populateOrderSummary(data) {
 
     orderSummaryContainer.append(orderSummary);
 }
+
+$('#productTableBody').on('click', '.delete-cart-btn', function() {
+    var productName = $(this).data('product');
+    RestClient.delete("beckend/cart/delete-product?productName=" + encodeURIComponent(productName), {}, function() {
+        RestClient.get("beckend/cart", {}, function(data) {
+            populateTableWithData(data);
+            populateOrderSummary(data);
+        });
+    }, function(xhr) {
+        console.error("Failed to delete product from cart:", xhr);
+    });
+});

@@ -4,6 +4,11 @@ $(document).ready(function() {
     if (user) {
         $('#profile-username').text(user.username);
         $('#profile-email').text(user.email);
+        if (user.userRole === 'Admin') {
+            $('#admin-button-container').show();
+        } else {
+            $('#admin-button-container').hide();
+        }
     }
 
     // Fetch order history
@@ -25,7 +30,7 @@ $(document).ready(function() {
             tbody.append(row);
         });
 
-        // Add click handler for order rows
+        
         $('.order-row').on('click', function() {
             const orderId = $(this).data('order-id');
             // Fetch order items and show in modal

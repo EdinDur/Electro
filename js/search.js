@@ -27,47 +27,36 @@ function populateCartDropdown(response) {
 
     var totalPrice = 0;
     var itemCount = 0;
-    var itemsSummary = {};
-
-    responseData.forEach(function(product) {
-        var productName = product.productName;
-        // Convert price to number
-        var price = parseFloat(product.price) || 0;
-        
-        if (!itemsSummary[productName]) {
-            itemsSummary[productName] = {
-                count: 0,
-                totalPrice: 0,
-                productImage: product.mImage,
-            };
-        }
-        itemsSummary[productName].count++;
-        itemsSummary[productName].totalPrice += price;
-        totalPrice += price;
-        itemCount++;
-    });
+    var totalProductQuantity = 0;
 
     cartList.empty();
 
-    Object.keys(itemsSummary).forEach(function(productName) {
-        var product = itemsSummary[productName];
-        var pricePerProduct = product.totalPrice / product.count;
+    responseData.forEach(function(product) {
+        var productName = product.productName;
+        var price = parseFloat(product.price) || 0;
+        var quantity = parseInt(product.quantity, 10) || 1;
+        var productImage = product.mImage;
+        var productTotal = price * quantity;
+
         var productItem = $('<div class="product-widget">');
         productItem.html(`
             <div class="product-img">
-                <img src="${product.productImage}" alt="${productName}">
+                <img src="${productImage}" alt="${productName}">
             </div>
             <div class="product-body">
                 <h3 class="product-name"><a href="#product">${productName}</a></h3>
-                <h4 class="product-price"><span class="qty">${product.count}x</span>$${pricePerProduct.toFixed(2)}</h4>
+                <h4 class="product-price"><span class="qty">${quantity}x</span>$${price.toFixed(2)}</h4>
             </div>
         `);
         cartList.append(productItem);
+
+        totalPrice += productTotal;
+        itemCount++;
+        totalProductQuantity += quantity;
     });
 
     totalItems.text(itemCount);
-    totalQuantity.text(itemCount > 0 ? itemCount + " Item(s) selected" : "No items selected");
-    // Ensure totalPrice is a number before using toFixed
+    totalQuantity.text(totalProductQuantity > 0 ? totalProductQuantity + " Item(s) selected" : "No items selected");
     subtotal.text("SUBTOTAL: $" + (totalPrice || 0).toFixed(2));
 }
 
@@ -139,60 +128,57 @@ $(document).on("click", ".quick-view", function(event) {
 
 //Add to cart button
 document.addEventListener('click', function(event) {
-    if (event.target.classList.contains('add-to-cart-btn')) {
+    if (event.target.classList.contains('add-to-cart-btn') || event.target.classList.contains('add-to-wishlist')) {
         event.preventDefault();
         var button = event.target;
-        var productName;
+        var productName = null;
 
-        // Check if we're on the product page
-        if (window.location.hash === '#product') {
-            productName = document.querySelector('.product-name').innerText;
-        } else {
-            // We're on the store/search page
-            var productContainer = button.closest('.product');
-            if (productContainer) {
-                var nameElement = productContainer.querySelector('[data-product-name]');
-                if (nameElement) {
-                    productName = nameElement.innerText;
+        // Try to find the closest ancestor with [data-product-name]
+        var nameElement = button.closest('[data-product-name]');
+        if (nameElement) {
+            productName = nameElement.innerText.trim();
+        }
+
+        // If not found, try within .product-details
+        if (!productName) {
+            var productDetails = button.closest('.product-details');
+            if (productDetails) {
+                var nameInDetails = productDetails.querySelector('[data-product-name]');
+                if (nameInDetails) {
+                    productName = nameInDetails.innerText.trim();
                 }
             }
         }
 
-        if (productName) {
-            addToCart(productName);
-        } else {
-            console.error('Could not find product name');
-            showErrorMessage("Unable to add product to cart");
-        }
-    }
-    else if (event.target.classList.contains('add-to-wishlist')) {
-        event.preventDefault();
-        var button = event.target;
-        var productName;
-
-        // Check if we're on the product page
-        if (window.location.hash === '#product') {
-            productName = document.querySelector('.product-name').innerText;
-        } else {
-            // We're on the store/search page
+        if (!productName) {
             var productContainer = button.closest('.product');
             if (productContainer) {
-                var nameElement = productContainer.querySelector('[data-product-name]');
-                if (nameElement) {
-                    productName = nameElement.innerText;
+                var nameInProduct = productContainer.querySelector('[data-product-name]');
+                if (nameInProduct) {
+                    productName = nameInProduct.innerText.trim();
                 }
             }
         }
 
+        if (!productName) {
+            var globalName = document.querySelector('[data-product-name]');
+            if (globalName) {
+                productName = globalName.innerText.trim();
+            }
+        }
+
         if (productName) {
-            AddToWishlist(productName);
+            if (event.target.classList.contains('add-to-cart-btn')) {
+                addToCart(productName);
+            } else {
+                AddToWishlist(productName);
+            }
         } else {
             console.error('Could not find product name');
-            showErrorMessage("Unable to add product to wishlist");
+            showErrorMessage("Unable to add product to cart/wishlist");
         }
     }
 });
-
 
 //Add to cart
 function addToCart(productName) {

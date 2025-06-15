@@ -112,3 +112,35 @@ Flight::route('DELETE /wishlist/delete', function() {
 
     Flight::json(["message" => "Wishlist successfully emptied"]);
 });
+
+/**
+ * @OA\Delete(
+ *      path="/wishlist/delete-product",
+ *      tags={"WISHLIST"},
+ *      @OA\Parameter(
+ *          name="productName",
+ *          in="query",
+ *          description="Product name to delete from wishlist",
+ *          required=true,
+ *          @OA\Schema(type="string")
+ *      ),
+ *      summary="Delete a product from user's wishlist",
+ *      @OA\Response(
+ *           response=200,
+ *           description="Product deleted from wishlist"
+ *      )
+ * )
+ */
+Flight::route('DELETE /wishlist/delete-product', function() {
+    $user = Flight::get('user');
+    $productName = Flight::request()->query['productName'] ?? Flight::request()->data['productName'] ?? null;
+
+    if (!isset($user->username) || !$productName) {
+        Flight::halt(400, "Username and productName are required");
+    }
+
+    $wishlist_service = new WishlistService();
+    $wishlist_service->delete_product_from_wishlist($user->username, $productName);
+
+    Flight::json(["message" => "Product deleted from wishlist"]);
+});

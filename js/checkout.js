@@ -10,7 +10,7 @@ function populateOrderSummary(response) {
     var orderSummaryContainer = $('#orderSummaryContainer');
     var totalPrice = 0;
 
-    // Clear existing order summary
+    // Clear previous order summary
     orderSummaryContainer.empty();
 
     // Populate order summary
@@ -18,7 +18,7 @@ function populateOrderSummary(response) {
 
     // Add product details
     responseData.forEach(function(product) {
-        var price = Number(product.price); // Ensure price is a number
+        var price = Number(product.price);
         var productRow = $('<div class="order-col">');
         productRow.html(`
             <div>${product.productName}</div>
@@ -173,7 +173,7 @@ $("#submitButton").click(function(event) {
             unblockUi("#paymentForm");
             unblockUi("#billingForm");
             toastr.success("Order placed successfully!");
-            // Optionally redirect or clear forms
+            window.location.hash = '#profile';
         }, function(xhr) {
             unblockUi("#paymentForm");
             unblockUi("#billingForm");

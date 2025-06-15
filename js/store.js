@@ -250,10 +250,9 @@ $(document).ready(function() {
 
         // On slider change, filter products
         $("#price-slider")[0].noUiSlider.on('change', function(values, handle) {
-            // Ensure min/max inputs are synced before filtering
             $("#price-min").val(Math.round(values[0]));
             $("#price-max").val(Math.round(values[1]));
-            displayProducts(1); // Always reset to first page on filter
+            displayProducts(1); 
         });
 
         // On input change, update slider and filter products
@@ -267,7 +266,7 @@ $(document).ready(function() {
 });
 
 			$(document).ready(function() {
-				// Hide categories by default unless on All Products
+				
 				function updateAsideVisibility() {
 					if(window.location.hash === "#store") {
 						$("#categories-aside").show();
@@ -287,7 +286,7 @@ $(document).ready(function() {
 					$("#categories-aside").hide();
 				});
 
-				// Also update on hash change (for SPA navigation)
+				
 				$(window).on("hashchange", function() {
 					updateAsideVisibility();
 				});

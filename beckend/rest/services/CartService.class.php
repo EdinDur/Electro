@@ -17,4 +17,7 @@ class CartService {
     public function delete_cart_all($username) {
         return $this->cart_dao->delete_cart_all($username);
     }
+    public function delete_product_from_cart($username, $productName) {
+        return $this->cart_dao->delete_product_from_cart($username, $productName);
+    }
 }
