@@ -70,7 +70,7 @@ function apiFormHandler(form, event) {
     blockUi("#register-form");
     let data = serializeForm(form);
 
-    RestClient.post("beckend/users/add", JSON.stringify(data), 
+    RestClient.post("beckend/users/add", data, 
         function(response) {
             $("#register-form")[0].reset();
             showSuccessMessage("Registration successful!");

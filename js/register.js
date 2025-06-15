@@ -73,7 +73,7 @@ function apiFormHandler(form, event) {
     $.ajax({
         url: "beckend/users/add",
         type: "POST",
-        data: JSON.stringify(data),
+        data: data,
         contentType: "application/json",
         dataType: "json",
         success: function(response) {
