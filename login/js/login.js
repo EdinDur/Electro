@@ -52,7 +52,7 @@ function apiFormHandler(form, event) {
     blockUi("#login-form");
     let data = serializeForm(form);
 
-    RestClient.post('beckend/auth/login', JSON.stringify(data), function(response) {
+    RestClient.post('beckend/auth/login', data, function(response) {
         if (response.token && response.username) {
             $("#login-form")[0].reset();
 

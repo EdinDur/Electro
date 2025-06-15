@@ -30,7 +30,8 @@ const RestClient = {
       $.ajax({
           url: Constants.get_api_base_url() + url,
           type: method,
-          data: data,
+          data: (method === "POST" || method === "PUT") ? JSON.stringify(data) : data,
+          contentType: (method === "POST" || method === "PUT") ? "application/json" : undefined,
           beforeSend: function (xhr) {
               const storedUser = Utils.get_from_localstorage('user');
               if (storedUser) {

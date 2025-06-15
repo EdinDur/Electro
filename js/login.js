@@ -55,7 +55,7 @@ function apiFormHandler(form, event) {
     $.ajax({
         url: "beckend/auth/login",
         type: "POST",
-        data: JSON.stringify(data),
+        data: data,
         contentType: "application/json",
         dataType: "json",
         success: function(response) {
