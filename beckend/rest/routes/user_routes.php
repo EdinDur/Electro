@@ -29,7 +29,6 @@ Flight::set('user_service', new UserService());
  */
 
 Flight::route('POST /users/add', function() {
-    // Get raw POST data
     $rawData = Flight::request()->getBody();
     
     $payload = json_decode($rawData, true);
@@ -53,7 +52,7 @@ Flight::route('POST /users/add', function() {
                 "iat" => time(),
                 "exp" => time() + (60*60*24*30) // valid for 30 days
             ];
-            $token = JWT::encode($jwt_payload, JWT_SECRET, "HS256");
+            $token = JWT::encode($jwt_payload, Config::JWT_SECRET(), "HS256");
 
             Flight::json(array_merge($user, ["token" => $token]));
         } else {
@@ -110,43 +109,58 @@ Flight::route('PUT /users/edit', function() {
  * @OA\Get(
  *      path="/users",
  *      tags={"USERS"},
+ *      summary="Get all users or filter by username/email",
  *      @OA\Parameter(
  *          name="username",
  *          in="query",
- *          description="Username",
+ *          description="Username or email for filtering (optional)",
  *          required=false,
  *          @OA\Schema(type="string")
  *      ),
  *      @OA\Parameter(
  *          name="psw",
  *          in="query",
- *          description="Password",
+ *          description="Password for login (optional)",
  *          required=false,
  *          @OA\Schema(type="string")
  *      ),
- *      summary="Get user for login",
  *      @OA\Response(
  *           response=200,
- *           description="User"
+ *           description="Returns user data"
  *      )
  * )
  */
 Flight::route('GET /users', function() {
-    $username = Flight::request()->query['username'];
-    $password = Flight::request()->query['psw'];
+    $username = Flight::request()->query->username;
+    $password = Flight::request()->query->psw;
+    
+    $user_service = Flight::get('user_service');
 
-    $user = [
-        'username' => $username,
-        'psw' => $password
-    ];
-
-    $user_service = new UserService();
-
-    $data = $user_service->get_user_login($user);
-
-    Flight::json([
-        'data' => $data,
-    ]);
+    // If both username and password provided, handle as login
+    if ($username && $password) {
+        $user = [
+            'username' => $username,
+            'psw' => $password
+        ];
+        $data = $user_service->get_user_login($user);
+        Flight::json([
+            'data' => $data,
+        ]);
+    } 
+    // If only username/email provided, filter users
+    elseif ($username) {
+        $data = $user_service->get_user_by_username($username);
+        Flight::json([
+            'data' => $data,
+        ]);
+    }
+    // If no parameters, return all users
+    else {
+        $data = $user_service->get_all_users();
+        Flight::json([
+            'data' => $data,
+        ]);
+    }
 });
 
 /**
@@ -200,10 +214,41 @@ Flight::route('GET /orders/@order_id/items', function($order_id) {
     Flight::json(['data' => $items]);
 });
 
+/**
+ * @OA\Post(
+ *     path="/users/update-role",
+ *     tags={"USERS"},
+ *     summary="Update user role",
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             required={"user_id","role"},
+ *             @OA\Property(property="user_id", type="integer"),
+ *             @OA\Property(property="role", type="string")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *          response=200,
+ *          description="Role updated successfully"
+ *     )
+ * )
+ */
+Flight::route('POST /users/update-role', function() {
+    $request = Flight::request();
+    $user_id = $request->data->user_id;
+    $role = $request->data->role;
+    
+    $user_service = Flight::get('user_service');
+    $result = $user_service->update_user_role($user_id, $role);
+    
+    Flight::json(['message' => 'Role updated successfully']);
+});
 
-
-
-
-
-
-
+Flight::route('GET /users/get', function() {
+    try {
+        $users = Flight::get('user_service')->get_all_users();
+        Flight::json(['data' => $users]);
+    } catch (Exception $e) {
+        Flight::json(['error' => $e->getMessage()], 500);
+    }
+});

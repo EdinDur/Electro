@@ -29,39 +29,29 @@
 				<template data-product-template hidden>
 					<!-- Product main img -->
 					<div class="col-md-5 col-md-push-2">
-						<div id="product-main-img">
-							<div class="product-preview">
-								<img  data-product-mImage>
-							</div>
+    <div id="product-main-img">
+        <div class="main-image">
+            <img data-product-mImage src="" alt="" id="main-product-image">
+        </div>
+    </div>
+</div>
+<!-- /Product main img -->
 
-							<div class="product-preview">
-								<img data-product-sImage1>
-							</div>
-
-							<div class="product-preview">
-								<img src="" alt="" data-product-sImage2>
-							</div>					
-						</div>
-					</div>
-					<!-- /Product main img -->
-
-					<!-- Product thumb imgs -->
-					<div class="col-md-2  col-md-pull-5">
-						<div id="product-imgs">
-							<div class="product-preview">
-								<img src="" alt="" data-product-mImage>
-							</div>
-
-							<div class="product-preview">
-								<img src="" alt="" data-product-sImage1>
-							</div>
-
-							<div class="product-preview">
-								<img src="" alt="" data-product-sImage2>
-							</div>
-						</div>
-					</div>
-					<!-- /Product thumb imgs -->
+<!-- Product thumb imgs -->
+<div class="col-md-2 col-md-pull-5">
+    <div id="product-thumbnails">
+        <div class="thumbnail-image active">
+            <img data-product-mImage src="" alt="" onclick="changeMainImage(this.src)">
+        </div>
+        <div class="thumbnail-image">
+            <img data-product-sImage1 src="" alt="" onclick="changeMainImage(this.src)">
+        </div>
+        <div class="thumbnail-image">
+            <img data-product-sImage2 src="" alt="" onclick="changeMainImage(this.src)">
+        </div>
+    </div>
+</div>
+<!-- /Product thumb imgs -->
 
 					<!-- Product details -->
 
@@ -77,19 +67,16 @@
 
 
 								<div class="add-to-cart">
-									<div class="qty-label">
+    								<div class="qty-label">
 										Qty
 										<div class="input-number">
-											<input type="number" value="1">
+											<input type="number">
 											<span class="qty-up">+</span>
 											<span class="qty-down">-</span>
 										</div>
 									</div>
-									<button class="add-to-cart-btn">
-										<i class="fa fa-shopping-cart"></i> add to cart
-									</button>
+									<button class="add-to-cart-btn-product"><i class="fa fa-shopping-cart"></i> add to cart</button>
 								</div>
-
 								<ul class="product-btns">
 									<li>
 										<a href="#" class="add-to-wishlist">
@@ -222,7 +209,7 @@
 														</div>
 														<span class="sum">0</span>
 													</li>
-												</ul>
+												</div>
 											</div>
 										</div>
 										<!-- /Rating -->

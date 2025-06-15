@@ -17,4 +17,7 @@ class WishlistService {
     public function delete_wishlist_all($username) {
         return $this->wishlist_dao->delete_wishlist_all($username);
     }
+    public function delete_product_from_wishlist($username, $productName) {
+        return $this->wishlist_dao->delete_product_from_wishlist($username, $productName);
+    }
 }

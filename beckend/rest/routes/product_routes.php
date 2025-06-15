@@ -130,3 +130,64 @@ Flight::route('GET /productsNew', function() {
         'data' => $data,
     ]);
 });
+
+Flight::route('POST /products/update-price', function() {
+    try {
+        $request = Flight::request();
+        $productName = $request->data->productName;
+        $price = $request->data->price;
+        
+        if (!isset($productName) || !isset($price)) {
+            throw new Exception("Missing required parameters");
+        }
+        
+        // Check if user is admin
+        $user = Flight::get('user');
+        if (!$user || $user->userRole !== 'Admin') {
+            Flight::json(['error' => 'Unauthorized'], 403);
+            return;
+        }
+        
+        $product_service = Flight::get('product_service');
+        $result = $product_service->update_product_price($productName, $price);
+        
+        if ($result) {
+            Flight::json(['success' => true, 'message' => 'Price updated successfully']);
+        } else {
+            Flight::json(['error' => 'Product not found or price unchanged'], 400);
+        }
+    } catch (Exception $e) {
+        Flight::json(['error' => $e->getMessage()], 400);
+    }
+});
+
+Flight::route('GET /products/get', function() {
+    try {
+        $products = Flight::get('product_service')->get_product_display();
+        Flight::json(['data' => $products]);
+    } catch (Exception $e) {
+        Flight::json(['error' => $e->getMessage()], 500);
+    }
+});
+
+Flight::route('POST /products/add-to-cart', function() {
+    try {
+        $request = Flight::request();
+        $data = json_decode($request->getBody());
+        
+        if (!isset($data->productName) || !isset($data->quantity)) {
+            throw new Exception("Missing required parameters");
+        }
+        
+        $product_service = Flight::get('product_service');
+        $result = $product_service->add_to_cart($data->productName, $data->quantity);
+        
+        if ($result) {
+            Flight::json(['success' => true, 'message' => 'Product added to cart']);
+        } else {
+            Flight::json(['error' => 'Failed to add product to cart'], 400);
+        }
+    } catch (Exception $e) {
+        Flight::json(['error' => $e->getMessage()], 400);
+    }
+});
